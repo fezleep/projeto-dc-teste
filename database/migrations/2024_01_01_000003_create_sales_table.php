@@ -9,12 +9,8 @@ return new class extends Migration {
     {
         Schema::create('sales', function (Blueprint $table) {
             $table->id();
-            // A chave estrangeira para client_id está correta, referenciando a tabela 'clients' por padrão
-            $table->foreignId('client_id')->nullable()->constrained()->nullOnDelete();
-
-            // CORREÇÃO: Especificamos explicitamente que user_id referencia a tabela 'clients'
-            $table->foreignId('user_id')->constrained('clients')->onDelete('cascade');
-
+            $table->foreignId('client_id')->nullable()->constrained()->onDelete('set null'); // Cliente que fez a compra
+            // REMOVA OU COMENTE ESTA LINHA: $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
             $table->string('payment_method');
             $table->decimal('total', 10, 2);
             $table->timestamps();

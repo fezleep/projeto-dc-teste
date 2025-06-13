@@ -10,11 +10,9 @@ class Product extends Model
     use HasFactory;
 
     protected $fillable = [
-        // Adicione os campos da sua tabela products aqui (ex: 'name', 'price', 'description')
+        'name',
+        'description',
+        'price',
+        // 'stock', // Removido
     ];
-    // Um produto pode estar em muitos itens de venda
-    public function saleItems()
-    {
-        return $this->hasMany(SaleItem::class);
-    }
 }

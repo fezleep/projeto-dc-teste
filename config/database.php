@@ -127,7 +127,7 @@ return [
 
     'migrations' => [
         'table' => 'migrations',
-        'update_date_on_publish' => true,
+        'update_columns' => true,
     ],
 
     /*
@@ -158,6 +158,7 @@ return [
             'password' => env('REDIS_PASSWORD'),
             'port' => env('REDIS_PORT', '6379'),
             'database' => env('REDIS_DB', '0'),
+            'default' => env('DB_CONNECTION', 'sqlite'),
         ],
 
         'cache' => [

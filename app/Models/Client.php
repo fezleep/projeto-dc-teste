@@ -4,23 +4,34 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable; // <-- Adicione esta linha
+use Illuminate\Notifications\Notifiable; // <-- Adicione esta linha (opcional, para notificações)
 
-class Client extends Model
+// Altere 'extends Model' para 'extends Authenticatable'
+class Client extends Authenticatable
 {
-    use HasFactory;
+    use HasFactory, Notifiable; // <-- Adicione Notifiable aqui (opcional)
 
+    // Seus campos fillable já definidos, incluindo 'name' e 'email'
     protected $fillable = [
-        // Adicione os campos da sua tabela clients aqui (ex: 'name', 'email', 'password' se for o usuário)
-        // Exemplo: 'name', 'email', 'phone', 'address'
+        'name',
+        'email',
+        'password', // <-- Adicione 'password' aqui também, pois agora é uma coluna
+        // Se tiver 'phone', 'address', etc., mantenha-os aqui.
     ];
 
-    // Relação: Um cliente pode ter muitas vendas (como cliente)
+    // Estes são importantes para a autenticação (ocultam o password ao serializar o Model)
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    // Seus relacionamentos
     public function salesAsClient()
     {
         return $this->hasMany(Sale::class, 'client_id');
     }
 
-    // Relação: Um cliente pode ter muitas vendas (como vendedor/user)
     public function salesAsUser()
     {
         return $this->hasMany(Sale::class, 'user_id');

@@ -13,16 +13,14 @@ class SaleItem extends Model
         'sale_id',
         'product_id',
         'quantity',
-        'price_at_sale', // Preço do produto no momento da venda
+        'price_at_sale',
     ];
 
-    // Relação: Um item de venda pertence a uma venda
     public function sale()
     {
         return $this->belongsTo(Sale::class);
     }
 
-    // Relação: Um item de venda pertence a um produto
     public function product()
     {
         return $this->belongsTo(Product::class);
