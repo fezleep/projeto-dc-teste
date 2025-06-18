@@ -32,28 +32,16 @@
             </label>
         </div>
 
-<div class="d-flex justify-content-between align-items-center mt-4">
-    @if (Route::has('password.request'))
-        <a class="text-sm text-decoration-underline text-muted" href="{{ route('password.request') }}">
-            {{ __('Esqueceu sua senha?') }}
-        </a>
-    @endif
+        <div class="flex items-center justify-end mt-4">
+            @if (Route::has('password.request'))
+                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
+                    {{ __('Forgot your password?') }}
+                </a>
+            @endif
 
-    {{-- SUBSTITUÍMOS <x-button> por um botão Bootstrap --}}
-    <button type="submit" class="btn btn-primary ms-4">
-        {{ __('Entrar') }}
-    </button>
-</div>
-
-{{-- ADICIONE ESTE BLOCO ABAIXO (ajustado para Bootstrap) --}}
-<div class="text-center mt-4">
-    <p class="text-sm text-muted">
-        Ainda não tem uma conta?
-        {{-- SUBSTITUÍMOS <x-nav-link> por um link Bootstrap --}}
-        <a class="text-sm text-decoration-underline text-muted" href="{{ route('register') }}">
-            {{ __('Registre-se aqui') }}
-        </a>
-    </p>
-</div>
+            <x-primary-button class="ms-3">
+                {{ __('Log in') }}
+            </x-primary-button>
+        </div>
     </form>
 </x-guest-layout>
