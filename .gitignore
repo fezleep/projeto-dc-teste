@@ -22,3 +22,10 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Arquivos temporários ou gerados acidentalmente que não devem ser versionados
+id()
+nullable()
+phpinfo.txt
+string('nome')
+timestamps()
