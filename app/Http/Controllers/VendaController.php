@@ -3,17 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Venda;
-use App\Models\Cliente; // Certifique-se de que este use existe
-use App\Models\Produto; // Para o método create/edit
-use App\Models\FormaPagamento; // Para o método create/edit
-use App\Models\User; // Certifique-se de que este use existe (para Vendedor)
+use App\Models\Cliente;
+use App\Models\Produto;
+use App\Models\FormaPagamento;
+use App\Models\User; // Usado para o Model do Vendedor
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use App\Models\ItemVenda; // Certifique-se de que este use existe
-use App\Models\Parcela; // Certifique-se de que este use existe
-use PDF; // Certifique-se de que este use existe se você usa o Facade do barryvdh/laravel-dompdf
-
+use App\Models\ItemVenda;
+use App\Models\Parcela;
+use PDF; // Se você usa o Facade do barryvdh/laravel-dompdf
 
 class VendaController extends Controller
 {
@@ -25,16 +24,19 @@ class VendaController extends Controller
         $query = Venda::query();
 
         // Carrega os relacionamentos para evitar N+1 query problem
+        // Mantive 'vendedor' aqui. Certifique-se que no seu Model Venda você tem
+        // public function vendedor() { return $this->belongsTo(User::class, 'user_id'); }
         $query->with(['cliente', 'vendedor']);
+
+        // Filtro por Vendedor
+        // ALTERAÇÃO AQUI: de vendedor_id para user_id
+        if ($request->filled('user_id')) { // Assumindo que o filtro virá como user_id
+            $query->where('user_id', $request->user_id);
+        }
 
         // Filtro por Cliente
         if ($request->filled('cliente_id')) {
             $query->where('cliente_id', $request->cliente_id);
-        }
-
-        // Filtro por Vendedor
-        if ($request->filled('vendedor_id')) {
-            $query->where('vendedor_id', $request->vendedor_id);
         }
 
         // Filtro por Data de Início
@@ -98,7 +100,8 @@ class VendaController extends Controller
             // Cria a Venda
             $venda = new Venda();
             $venda->cliente_id = $request->cliente_id;
-            $venda->vendedor_id = Auth::id(); // Usuário logado
+            // ALTERAÇÃO AQUI: de vendedor_id para user_id
+            $venda->user_id = Auth::id(); // Usuário logado
             $venda->forma_pagamento_id = $request->forma_pagamento_id;
             $venda->total = $request->total_enviado; // Usa o total enviado pelo JS
             $venda->save();
@@ -151,6 +154,7 @@ class VendaController extends Controller
     public function show(Venda $venda)
     {
         // Carrega os relacionamentos para a view de detalhes
+        // Mantive 'vendedor' aqui. Lembre-se de verificar o Model Venda.
         $venda->load('cliente', 'vendedor', 'formaPagamento', 'itensVenda.produto', 'parcelas');
         return view('vendas.show', compact('venda'));
     }
@@ -194,7 +198,9 @@ class VendaController extends Controller
         DB::beginTransaction();
         try {
             $venda->cliente_id = $request->cliente_id;
-            // O vendedor não muda na edição, pois ele é quem criou a venda
+            // O vendedor (user_id) não muda na edição, pois ele é quem criou a venda
+            // Se você tinha alguma linha como $venda->vendedor_id = ... aqui, remova ou mude para user_id
+            // $venda->user_id = $venda->user_id; // Esta linha não é necessária se o user_id não for atualizado
             $venda->forma_pagamento_id = $request->forma_pagamento_id;
             $venda->total = $request->total_enviado;
             $venda->save();
@@ -207,8 +213,8 @@ class VendaController extends Controller
             foreach ($request->produtos as $produtoData) {
                 // Tenta encontrar o item de venda existente pelo produto_id e venda_id
                 $item = ItemVenda::where('venda_id', $venda->id)
-                                  ->where('produto_id', $produtoData['id'])
-                                  ->first();
+                                 ->where('produto_id', $produtoData['id'])
+                                 ->first();
 
                 if ($item) {
                     // Se o item existe, atualiza a quantidade e o preço
@@ -233,9 +239,8 @@ class VendaController extends Controller
             }
             // Remove itens que foram removidos da requisição
             ItemVenda::where('venda_id', $venda->id)
-                      ->whereNotIn('id', $newItemIds)
-                      ->delete();
-
+                     ->whereNotIn('id', $newItemIds)
+                     ->delete();
 
             // Recria Parcelas (método mais simples para atualização, pode ser otimizado)
             // Remove as parcelas antigas e gera novas com base na nova forma de pagamento e total
@@ -291,6 +296,8 @@ class VendaController extends Controller
      */
     public function exportPdf(Venda $venda)
     {
+        // Carrega os relacionamentos para a view de detalhes
+        // Mantive 'vendedor' aqui. Lembre-se de verificar o Model Venda.
         $venda->load('cliente', 'vendedor', 'formaPagamento', 'itensVenda.produto', 'parcelas');
         $pdf = PDF::loadView('vendas.pdf', compact('venda')); // 'vendas.pdf' é a view que você criará para o PDF
 

@@ -28,8 +28,8 @@ class Venda extends Model
 
     public function vendedor()
     {
-        // Ajuste 'App\Models\User' se seu Model User estiver em outro namespace
-        return $this->belongsTo(\App\Models\User::class, 'vendedor_id');
+        return $this->belongsTo(User::class, 'user_id');
+    
     }
 
     public function formaPagamento()

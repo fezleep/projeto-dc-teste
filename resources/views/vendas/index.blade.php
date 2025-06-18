@@ -35,21 +35,17 @@
                             <select name="cliente_id" id="cliente_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                 <option value="">-- Todos os Clientes --</option>
                                 @foreach($clientes as $cliente)
-                                    <option value="{{ $cliente->id }}" {{ (request('cliente_id') == $cliente->id) ? 'selected' : '' }}>
-                                        {{ $cliente->nome }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div>
-                            <label for="vendedor_id" class="block text-sm font-medium text-gray-700">Vendedor</label>
-                            <select name="vendedor_id" id="vendedor_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                                <option value="">-- Todos os Vendedores --</option>
-                                @foreach($vendedores as $vendedor)
-                                    <option value="{{ $vendedor->id }}" {{ (request('vendedor_id') == $vendedor->id) ? 'selected' : '' }}>
-                                        {{ $vendedor->name }}
-                                    </option>
-                                @endforeach
+                                        <option value="{{ $cliente->id }}" {{ ($request->cliente_id == $cliente->id) ? 'selected' : '' }}>{{ $cliente->nome }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <label for="user_id" class="block text-sm font-medium text-gray-700">Vendedor:</label>
+                                <select name="user_id" id="user_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                                    <option value="">Todos os Vendedores</option>
+                                    @foreach($vendedores as $vendedor)
+                                        <option value="{{ $vendedor->id }}" {{ ($request->user_id == $vendedor->id) ? 'selected' : '' }}>{{ $vendedor->name }}</option>
+                                    @endforeach
                             </select>
                         </div>
                         <div>
